@@ -20,7 +20,7 @@ jobs:
       path: ~/.gradle/caches
 
   # Run Gradle build (wrapper is inside progr3/)
-  - task: Gradle@3
+  - task: Gradle@4
     inputs:
       gradleWrapperFile: 'progr3/gradlew'
       workingDirectory: 'progr3'
