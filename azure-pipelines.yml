@@ -5,11 +5,12 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
-# Checkout your repository
 - checkout: self
   fetchDepth: 1
 
-# Cache Gradle dependencies (optional, speeds up builds)
+- script: chmod +x gradlew
+  displayName: Make gradlew executable
+
 - task: Cache@2
   inputs:
     key: 'gradle | "$(Agent.OS)" | **/*.gradle*'
@@ -17,7 +18,6 @@ steps:
       gradle | "$(Agent.OS)"
     path: ~/.gradle/caches
 
-# Run Gradle build
 - task: Gradle@3
   inputs:
     gradleWrapperFile: 'gradlew'
@@ -26,9 +26,8 @@ steps:
     publishJUnitResults: true
     testResultsFiles: '**/TEST-*.xml'
     javaHomeOption: 'JDKVersion'
-    jdkVersionOption: '1.17'   
+    jdkVersionOption: '17'
     jdkArchitectureOption: 'x64'
-
 
 - task: PublishBuildArtifacts@1
   inputs:
