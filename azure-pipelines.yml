@@ -4,34 +4,37 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
-steps:
-- checkout: self
-  fetchDepth: 1
+jobs:
+- job: Build
+  timeoutInMinutes: 120   # prevent long builds from being killed
+  steps:
+  - checkout: self
+    fetchDepth: 1
 
-# Cache Gradle dependencies
-- task: Cache@2
-  inputs:
-    key: 'gradle | "$(Agent.OS)" | **/*.gradle*'
-    restoreKeys: |
-      gradle | "$(Agent.OS)"
-    path: ~/.gradle/caches
+  # Cache Gradle dependencies
+  - task: Cache@2
+    inputs:
+      key: 'gradle | "$(Agent.OS)" | **/*.gradle*'
+      restoreKeys: |
+        gradle | "$(Agent.OS)"
+      path: ~/.gradle/caches
 
-# Run Gradle build (wrapper is inside progr3/)
-- task: Gradle@3
-  inputs:
-    gradleWrapperFile: 'progr3/gradlew'
-    workingDirectory: 'progr3'
-    tasks: 'build'
-    options: '-Xmx3072m'
-    publishJUnitResults: true
-    testResultsFiles: '**/TEST-*.xml'
-    javaHomeOption: 'JDKVersion'
-    jdkVersionOption: '17'
-    jdkArchitectureOption: 'x64'
+  # Run Gradle build (wrapper is inside progr3/)
+  - task: Gradle@3
+    inputs:
+      gradleWrapperFile: 'progr3/gradlew'
+      workingDirectory: 'progr3'
+      tasks: 'build'
+      options: '-Xmx3072m'
+      publishJUnitResults: true
+      testResultsFiles: '**/TEST-*.xml'
+      javaHomeOption: 'JDKVersion'
+      jdkVersionOption: '17'
+      jdkArchitectureOption: 'x64'
 
-# Publish artifacts from progr3/build/libs
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: 'progr3/build/libs'
-    ArtifactName: 'drop'
-    publishLocation: 'Container'
+  # Publish artifacts from progr3/build/libs
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: 'progr3/build/libs'
+      ArtifactName: 'drop'
+      publishLocation: 'Container'
